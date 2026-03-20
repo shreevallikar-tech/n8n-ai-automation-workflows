@@ -1,0 +1,296 @@
+{
+  "name": "CRM Lead Automation",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "new-lead",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -304,
+        0
+      ],
+      "id": "60473f33-3f18-4059-ba38-be98bd682bdb",
+      "name": "Webhook",
+      "webhookId": "3178c872-3292-4eaa-8d47-ac61929b691f"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3e761590-f75c-4eb8-8abd-26ae8e7df91a",
+              "name": "name",
+              "value": "={{ $json.body.name }}",
+              "type": "string"
+            },
+            {
+              "id": "b06d3145-eea2-441e-99df-b577d9d367d4",
+              "name": "email",
+              "value": "={{ $json.body.email }}",
+              "type": "string"
+            },
+            {
+              "id": "4cc29d05-e16e-4aa5-8130-791ef5eb13b6",
+              "name": "phone",
+              "value": "={{ $json.body.phone }}",
+              "type": "string"
+            },
+            {
+              "id": "d2a3e2ae-ed91-466f-a8a2-1b5e449c215d",
+              "name": "source",
+              "value": "={{ $json.body.source }}",
+              "type": "string"
+            },
+            {
+              "id": "85545dd1-7ff5-4c1f-b131-71aaf00992ac",
+              "name": "status",
+              "value": "new",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -80,
+        0
+      ],
+      "id": "add2c326-749c-455b-ad6c-1f842c235416",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://openrouter.ai/api/v1/chat/completions",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": " Bearer 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"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"openai/gpt-3.5-turbo\",\n  \"messages\": [\n    {\n      \"role\": \"user\",\n      \"content\": \"You are a real estate agent. Write a short friendly email to {{ $json.name }} thanking them and asking what property they want. Keep it under 60 words.\"\n    }\n  ]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        128,
+        0
+      ],
+      "id": "ff00b7f9-95b4-4af4-8e92-f909ee1b9dfe",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "sendTo": "shreevallikar@gmail.com",
+        "subject": "Thanks for your interest",
+        "emailType": "text",
+        "message": "hi , thanks for interested",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        336,
+        0
+      ],
+      "id": "297767a5-5a08-42a9-997b-1c64327675e0",
+      "name": "Send a message",
+      "webhookId": "777d0a8f-1710-4604-a54d-5cbe9c0f5f17",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "kd8G6STysXgB8y91",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "appthRgnIqPKXbjGV",
+          "mode": "list",
+          "cachedResultName": "CRM",
+          "cachedResultUrl": "https://airtable.com/appthRgnIqPKXbjGV"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tbln6BxWlFj11CNFH",
+          "mode": "list",
+          "cachedResultName": "Leads",
+          "cachedResultUrl": "https://airtable.com/appthRgnIqPKXbjGV/tbln6BxWlFj11CNFH"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Name": "={{ $('Edit Fields').item.json.name }}",
+            "Phone": "={{ $('Edit Fields').item.json.phone }}",
+            "Email": "={{ $('Edit Fields').item.json.email }}",
+            "Source": "={{ $('Edit Fields').item.json.source }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Phone",
+              "displayName": "Phone",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Source",
+              "displayName": "Source",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Todo",
+                  "value": "Todo"
+                },
+                {
+                  "name": "In progress",
+                  "value": "In progress"
+                },
+                {
+                  "name": "Done",
+                  "value": "Done"
+                }
+              ],
+              "readOnly": false,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        544,
+        0
+      ],
+      "id": "53c53511-e478-4f03-92fe-48be1c2582ca",
+      "name": "Create a record",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "zn8GXtO3RBlmVrTd",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message": {
+      "main": [
+        [
+          {
+            "node": "Create a record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "a919407f-d31a-4cf1-8d6b-ddf7f02b5fb0",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "c2e687b747134df1e0e2f2576e974a2467a4b1b11244e2d984045f4a31679651"
+  },
+  "id": "42eGI2Hm6l7pkNBl",
+  "tags": []
+}
